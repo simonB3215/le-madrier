@@ -96,7 +96,7 @@ Del dueño del chalet:
 1. Confirmar si ofrece desayuno. El sitio anterior describe solo un apartamento de vacaciones y no lo menciona.
 2. Horas de llegada y salida.
 3. Presentación de los anfitriones (nombres, foto, unas líneas).
-4. Opiniones reales de huéspedes.
+4. Reseñas: la portada muestra la nota de Google (5,0 con 7 reseñas, tomada el 2026-10-12) y un enlace a la ficha. Faltan los textos: Google solo mostró 5 de las 7 sin iniciar sesión, y las visibles eran solo estrellas. La nota hay que actualizarla a mano en `src/config/site.ts`.
 5. Confirmar los equipamientos tomados de los pictogramas del sitio anterior (mascotas, lavadora, wifi, TV, cuna, no fumadores).
 6. Fotos en mayor resolución: las actuales llegan a 1282 px de ancho como máximo.
 

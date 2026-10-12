@@ -102,7 +102,11 @@ export default {
     reviews: {
       eyebrow: 'Ils ont séjourné au Madrier',
       title: 'Avis de nos hôtes',
-      todo: '[AJOUTER DES AVIS RÉELS]',
+      outOf: 'sur 5',
+      count: 'avis sur Google',
+      checked: 'Note relevée le',
+      read: 'Lire les avis sur Google',
+      stars: 'étoiles',
     },
   },
   apartment: {

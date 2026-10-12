@@ -14,6 +14,10 @@ const { lang } = Astro.props;
 const tr = t(lang);
 const h = tr.home;
 const priceFrom = `${tr.common.from} ${formatPrice(lowestPrice())} ${tr.common.perNight}`;
+const g = site.googleReviews;
+const locale = lang === 'fr' ? 'fr-CH' : 'en-GB';
+const ratingText = g.rating.toLocaleString(locale, { minimumFractionDigits: 1 });
+const checkedText = new Date(g.checked).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 const facts = [
   { icon: 'users', text: h.facts.guests },
   { icon: 'bed-double', text: h.facts.bedrooms },
@@ -175,7 +179,37 @@ const cards = [
       <div data-reveal>
         <p class="eyebrow">{h.reviews.eyebrow}</p>
         <h2 class="mt-4 text-3xl sm:text-4xl">{h.reviews.title}</h2>
-        <div class="mt-6"><Todo lang={lang} text={h.reviews.todo} /></div>
+        <div class="card mt-6">
+          <p class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span class="font-serif text-5xl font-semibold text-noyer">{ratingText}</span>
+            <span>
+              <span class="flex gap-0.5 text-noyer" role="img" aria-label={`${ratingText} ${h.reviews.outOf}`}>
+                {[1, 2, 3, 4, 5].map((n) => <Icon name="star" size={24} class={n <= Math.round(g.rating) ? 'fill-noyer' : ''} />)}
+              </span>
+              <span class="mt-1 block font-bold">{h.reviews.outOf} · {g.count} {h.reviews.count}</span>
+            </span>
+          </p>
+          <p class="mt-3 text-sm">{h.reviews.checked} {checkedText}.</p>
+          {
+            g.items.length > 0 && (
+              <ul class="mt-5 grid gap-4">
+                {g.items.map((r) => (
+                  <li class="border-t-2 border-noyer/20 pt-4">
+                    <blockquote>
+                      <p>« {r.text} »</p>
+                      <footer class="mt-2 font-bold">
+                        {r.author} · {r.date}
+                      </footer>
+                    </blockquote>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+          <a href={g.url} target="_blank" rel="noopener" class="btn btn-secondary mt-5 hover:bg-beige">
+            {h.reviews.read}<Icon name="external-link" size={18} /><span class="sr-only">{tr.common.newTab}</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>

@@ -7,7 +7,7 @@ interface Props {
 }
 const { name, size = 22, class: cls = '' } = Astro.props;
 const files = import.meta.glob(
-  '/node_modules/lucide-static/icons/{users,bed-double,square-parking,wifi,calendar-days,phone,mail,map-pin,cigarette-off,baby,paw-print,washing-machine,tv,tree-pine,sun,snowflake,bath,utensils,sofa,check,arrow-right,x,chevron-left,chevron-right,menu,external-link,mountain-snow,door-open,circle-alert,cable-car,banknote,clock,moon,bed-single}.svg',
+  '/node_modules/lucide-static/icons/{users,bed-double,square-parking,wifi,calendar-days,phone,mail,map-pin,cigarette-off,baby,paw-print,washing-machine,tv,tree-pine,sun,snowflake,bath,utensils,sofa,check,arrow-right,x,chevron-left,chevron-right,menu,external-link,mountain-snow,door-open,circle-alert,cable-car,banknote,clock,moon,bed-single,star}.svg',
   { query: '?raw', import: 'default', eager: true }
 ) as Record<string, string>;
 const raw = files[`/node_modules/lucide-static/icons/${name}.svg`];

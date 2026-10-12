@@ -3,14 +3,13 @@
 Sitio nuevo de lemadrier.ch: 6 páginas en francés y las mismas 6 en inglés.
 Hecho con Astro + Tailwind. El resultado es HTML estático: se sube a cualquier hosting, sin base de datos.
 
-## Antes de publicar: 5 cosas pendientes
+## Antes de publicar: 4 cosas pendientes
 
 En el sitio aparecen recuadros con borde punteado y la etiqueta "À compléter". Son datos que el sitio anterior no tenía y que no se inventaron:
 
 | Dónde | Qué falta | Cómo se completa |
 | --- | --- | --- |
 | Accueil | Presentación de los anfitriones | Texto en `src/i18n/fr.ts` y `en.ts` → `home.hosts` |
-| Accueil | Opiniones reales de huéspedes | `home.reviews` en los mismos archivos |
 | L'appartement | Si se ofrece desayuno | `apartment.breakfast` (o borrar el recuadro en `src/views/Apartment.astro`) |
 | Tarifs | Horas de llegada y salida | `checkIn` y `checkOut` en `src/config/site.ts` |
 | Contact | Dirección de envío del formulario | `formEndpoint` en `src/config/site.ts` (ver más abajo) |
@@ -69,6 +68,17 @@ Las fotos están en `src/assets/photos/`.
 Las fotos actuales miden como máximo 1282 px de ancho. Si el dueño tiene los originales de cámara, conviene reemplazarlas (ideal: 2400 px de ancho o más).
 
 `public/images/original/` es solo el archivo de lo descargado del sitio anterior; no se publica.
+
+## Reseñas de Google
+
+La portada muestra la nota de la ficha de Google Maps del chalet y un botón que lleva a las reseñas. Los datos están en `googleReviews`, en `src/config/site.ts`:
+
+- `rating` y `count`: nota y número de reseñas. **No se actualizan solos**: hay que copiarlos de Google y cambiar `checked` (la fecha que se muestra al lado).
+- `items`: reseñas para citar en la portada. Está vacío. Para añadir una, copiar el texto tal cual de Google:
+
+```ts
+items: [{ author: 'Camille', date: '2022', text: 'Texto de la reseña…' }],
+```
 
 ## Calendario de reservas
 

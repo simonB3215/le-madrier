@@ -104,7 +104,11 @@ const en: typeof fr = {
     reviews: {
       eyebrow: 'They stayed at Le Madrier',
       title: 'Guest reviews',
-      todo: '[AJOUTER DES AVIS RÉELS]',
+      outOf: 'out of 5',
+      count: 'reviews on Google',
+      checked: 'Rating checked on',
+      read: 'Read the reviews on Google',
+      stars: 'stars',
     },
   },
   apartment: {
