@@ -1,0 +1,14 @@
+---
+// Marqueur visible : contenu que le propriétaire doit confirmer ou fournir.
+import { t, type Lang } from '../i18n';
+interface Props {
+  lang: Lang;
+  text: string;
+}
+const { lang, text } = Astro.props;
+---
+
+<p class="todo" data-todo>
+  <span class="todo-tag">{t(lang).common.todoLabel}</span>
+  <span>{text}</span>
+</p>

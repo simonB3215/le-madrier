@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, type Lang } from '../i18n';
+import { photos } from '../config/photos';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const r = tr.region;
+const seasons = [
+  { id: 'hiver', icon: 'snowflake', photo: photos.chaletHiverPanneaux, ...r.winter },
+  { id: 'ete', icon: 'sun', photo: photos.terrasseEte, ...r.summer },
+];
+// Liens officiels (vérifiés le 11.10.2026)
+const links = [
+  { href: 'https://www.alpesvaudoises.ch', ...r.links.tourism },
+  { href: 'https://www.glacier3000.ch', ...r.links.glacier },
+  { href: 'https://www.magicpass.ch', ...r.links.magicpass },
+  { href: 'https://www.alpine-pearls.com/fr/vacances/suisse/les-diablerets/', ...r.links.alpine },
+];
+---
+
+<Base lang={lang} page="region" title={r.title} description={r.description}>
+  <PageHero eyebrow={r.eyebrow} title={r.h1} lead={r.lead} />
+
+  <section class="section">
+    <div class="wrap grid gap-8 lg:grid-cols-2">
+      {
+        seasons.map((s) => (
+          <article class="card p-0" id={s.id} aria-labelledby={`${s.id}-title`} data-reveal>
+            <Photo photo={s.photo} lang={lang} sizes="(min-width: 1024px) 560px, 100vw" ratio="16 / 10" class="rounded-b-none shadow-none" />
+            <div class="p-6 sm:p-8">
+              <h2 id={`${s.id}-title`} class="flex items-center gap-3 text-3xl">
+                <span class="chip">
+                  <Icon name={s.icon} />
+                </span>
+                {s.title}
+              </h2>
+              <ul class="mt-5 grid gap-2 sm:grid-cols-2">
+                {s.items.map((i) => (
+                  <li class="flex items-start gap-2 font-bold">
+                    <Icon name="check" size={20} class="mt-1 text-noyer" />
+                    {i}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section-beige" aria-labelledby="glacier-title">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <Photo photo={photos.cimesCrepuscule} lang={lang} sizes="(min-width: 1024px) 560px, 100vw" ratio="3 / 2" />
+      <div data-reveal>
+        <p class="eyebrow">15 min</p>
+        <h2 id="glacier-title" class="mt-4 flex items-center gap-3 text-3xl sm:text-4xl">{r.glacier.title}</h2>
+        <p class="mt-5 max-w-prose">{r.glacier.text}</p>
+        <a href="https://www.glacier3000.ch" target="_blank" rel="noopener" class="btn btn-secondary mt-7">
+          <Icon name="cable-car" size={20} />
+          {r.glacier.link}
+          <Icon name="external-link" size={18} />
+          <span class="sr-only">{tr.common.newTab}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="links-title">
+    <div class="wrap">
+      <h2 id="links-title" class="text-3xl sm:text-4xl">{r.links.title}</h2>
+      <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          links.map((l) => (
+            <li data-reveal>
+              <a
+                href={l.href}
+                target="_blank"
+                rel="noopener"
+                class="card group flex h-full flex-col transition-shadow duration-200 hover:shadow-md"
+              >
+                <span class="flex items-center justify-between gap-2 font-serif text-xl font-semibold text-noyer underline decoration-miel decoration-2 underline-offset-4 group-hover:decoration-noyer">
+                  {l.name}
+                  <Icon name="external-link" size={18} />
+                </span>
+                <span class="mt-2">{l.text}</span>
+                <span class="sr-only">{tr.common.newTab}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>

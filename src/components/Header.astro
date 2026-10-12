@@ -1,0 +1,127 @@
+---
+import Icon from './Icon.astro';
+import { t, routes, navOrder, langs, hreflang, type Lang, type PageKey } from '../i18n';
+import { site } from '../config/site';
+interface Props {
+  lang: Lang;
+  page: PageKey | null;
+}
+const { lang, page } = Astro.props;
+const tr = t(lang);
+const target = (l: Lang) => routes[page ?? 'home'][l];
+---
+
+<header class="sticky top-0 z-40 border-b border-noyer/15 bg-creme/95 backdrop-blur-sm">
+  <div class="wrap flex min-h-18 items-center justify-between gap-3 py-2">
+    <a href={routes.home[lang]} class="flex min-h-11 flex-col justify-center rounded-lg leading-none">
+      <span class="font-serif text-2xl font-semibold whitespace-nowrap text-noyer">Le Madrier</span>
+      <span class="mt-1 hidden text-[0.6875rem] font-extrabold tracking-[0.14em] whitespace-nowrap text-texte uppercase sm:block">{tr.brandTagline}</span>
+    </a>
+
+    <nav aria-label={tr.nav.label} class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {
+          navOrder
+            .filter((k) => k !== 'home')
+            .map((k) => (
+              <li>
+                <a
+                  href={routes[k][lang]}
+                  aria-current={page === k ? 'page' : undefined}
+                  class="flex min-h-11 items-center rounded-full px-3.5 font-bold text-texte underline-offset-8 transition-colors duration-200 hover:bg-beige aria-[current=page]:text-noyer aria-[current=page]:underline aria-[current=page]:decoration-miel aria-[current=page]:decoration-[3px]"
+                >
+                  {tr.nav[k]}
+                </a>
+              </li>
+            ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <ul class="flex items-center rounded-full border-2 border-noyer/40 p-0.5" aria-label={tr.nav.langLabel}>
+        {
+          langs.map((l) => (
+            <li>
+              <a
+                href={target(l)}
+                lang={l}
+                hreflang={hreflang[l]}
+                aria-current={l === lang ? 'true' : undefined}
+                aria-label={t(l).langName}
+                class="flex min-h-11 min-w-11 items-center justify-center rounded-full px-2 text-sm font-extrabold text-noyer uppercase transition-colors duration-200 hover:bg-beige aria-[current=true]:bg-noyer aria-[current=true]:text-creme"
+              >
+                {l}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a href={routes.contact[lang]} class="btn btn-primary hidden min-h-11 px-5 py-2 sm:inline-flex">
+        <Icon name="calendar-days" size={18} />{tr.nav.book}
+      </a>
+
+      <button
+        type="button"
+        class="btn btn-secondary min-h-11 px-3.5 py-2 lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-toggle
+        data-label-open={tr.nav.menu}
+        data-label-close={tr.nav.close}
+      >
+        <span data-menu-icon-open><Icon name="menu" size={20} /></span>
+        <span data-menu-icon-close hidden><Icon name="x" size={20} /></span>
+        <span data-menu-label>{tr.nav.menu}</span>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-menu" aria-label={tr.nav.label} class="border-t border-noyer/15 bg-creme lg:hidden" hidden>
+    <ul class="wrap grid gap-1 py-3 sm:grid-cols-2">
+      {
+        navOrder.map((k) => (
+          <li>
+            <a
+              href={routes[k][lang]}
+              aria-current={page === k ? 'page' : undefined}
+              class="flex min-h-12 items-center rounded-xl px-4 text-lg font-bold text-texte transition-colors duration-200 hover:bg-beige aria-[current=page]:bg-beige aria-[current=page]:text-noyer"
+            >
+              {tr.nav[k]}
+            </a>
+          </li>
+        ))
+      }
+      <li class="sm:col-span-2">
+        <a href={`tel:${site.phoneHref}`} class="flex min-h-12 items-center gap-2 rounded-xl px-4 text-lg font-bold text-noyer hover:bg-beige">
+          <Icon name="phone" size={20} />{site.phone}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.getElementById('mobile-menu');
+  if (toggle && menu) {
+    const label = toggle.querySelector('[data-menu-label]')!;
+    const iconOpen = toggle.querySelector<HTMLElement>('[data-menu-icon-open]')!;
+    const iconClose = toggle.querySelector<HTMLElement>('[data-menu-icon-close]')!;
+    const set = (open: boolean) => {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      label.textContent = open ? toggle.dataset.labelClose! : toggle.dataset.labelOpen!;
+      iconOpen.hidden = open;
+      iconClose.hidden = !open;
+    };
+    toggle.addEventListener('click', () => set(menu.hidden));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) {
+        set(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>

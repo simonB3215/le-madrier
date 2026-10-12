@@ -1,0 +1,29 @@
+---
+// Barre fixe en bas d'écran sur mobile : « Appeler » et « Réserver ».
+import Icon from './Icon.astro';
+import { t, routes, type Lang } from '../i18n';
+import { site } from '../config/site';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+---
+
+<nav
+  aria-label={tr.nav.quickActions}
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-noyer/20 bg-creme/95 px-3 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] shadow-[0_-6px_16px_rgb(43_33_24/0.12)] backdrop-blur-sm lg:hidden"
+>
+  <ul class="mx-auto grid max-w-md grid-cols-2 gap-3">
+    <li>
+      <a href={`tel:${site.phoneHref}`} class="btn btn-secondary w-full bg-creme">
+        <Icon name="phone" size={20} />{tr.nav.call}
+      </a>
+    </li>
+    <li>
+      <a href={routes.contact[lang]} class="btn btn-primary w-full">
+        <Icon name="calendar-days" size={20} />{tr.nav.book}
+      </a>
+    </li>
+  </ul>
+</nav>

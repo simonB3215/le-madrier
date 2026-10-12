@@ -1,0 +1,125 @@
+---
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/nunito-sans';
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { t, routes, langs, hreflang, ogLocale, type Lang, type PageKey } from '../i18n';
+import { site } from '../config/site';
+import { photos } from '../config/photos';
+
+interface Props {
+  lang: Lang;
+  page: PageKey | null;
+  title: string;
+  description?: string;
+}
+const { lang, page, title, description } = Astro.props;
+const tr = t(lang);
+const abs = (path: string) => new URL(path, site.url).href;
+const canonical = page ? abs(routes[page][lang]) : undefined;
+const og = await getImage({ src: photos.chaletHiverFacade.src, format: 'jpg', width: 1200, height: 630, fit: 'cover' });
+
+// Données structurées schema.org. Le site d'origine décrit un appartement de
+// vacances (pas de petit-déjeuner mentionné) : type LodgingBusiness.
+// Si le petit-déjeuner est confirmé, remplacez par 'BedAndBreakfast'.
+const prices = site.rates.map((r) => r.price);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LodgingBusiness',
+  '@id': abs('/#lodging'),
+  name: site.name,
+  description: tr.footer.about,
+  url: abs(routes.home[lang]),
+  image: abs(og.src),
+  telephone: site.phone,
+  email: site.email,
+  priceRange: `${site.currency} ${Math.min(...prices)}–${Math.max(...prices)}`,
+  currenciesAccepted: site.currency,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    postalCode: site.address.postalCode,
+    addressLocality: site.address.locality,
+    addressRegion: site.address.region,
+    addressCountry: site.address.country,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  ...(site.checkIn ? { checkinTime: site.checkIn } : {}),
+  ...(site.checkOut ? { checkoutTime: site.checkOut } : {}),
+  amenityFeature: [tr.amenities.parking, tr.amenities.wifi, tr.amenities.tv, tr.amenities.washer, tr.amenities.garden].map(
+    (name) => ({ '@type': 'LocationFeatureSpecification', name, value: true })
+  ),
+  sameAs: [site.facebook],
+};
+---
+
+<!doctype html>
+<html lang={hreflang[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {page && langs.map((l) => <link rel="alternate" hreflang={hreflang[l]} href={abs(routes[page][l])} />)}
+    {page && <link rel="alternate" hreflang="x-default" href={abs(routes[page].fr)} />}
+    {!page && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {langs.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
+    <meta property="og:image" content={abs(og.src)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={photos.chaletHiverFacade[lang]} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#FAF3E6" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a
+      href="#contenu"
+      class="btn btn-primary sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-3 focus-visible:left-3 focus-visible:z-50"
+    >
+      {tr.skip}
+    </a>
+    <Header lang={lang} page={page} />
+    <main id="contenu" tabindex="-1" class="outline-none">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <MobileBar lang={lang} />
+
+    <script>
+      const items = document.querySelectorAll('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) =>
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-visible');
+                io.unobserve(e.target);
+              }
+            }),
+          { rootMargin: '0px 0px -8% 0px' }
+        );
+        items.forEach((el) => io.observe(el));
+      } else {
+        items.forEach((el) => el.classList.add('is-visible'));
+      }
+    </script>
+  </body>
+</html>

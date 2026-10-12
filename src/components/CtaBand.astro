@@ -1,0 +1,32 @@
+---
+import Icon from './Icon.astro';
+import { t, routes, type Lang } from '../i18n';
+import { site } from '../config/site';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+---
+
+<section class="section" aria-labelledby="cta-title">
+  <div class="wrap">
+    <div
+      class="on-dark rounded-[1.75rem] bg-noyer px-6 py-10 text-creme sm:px-10 lg:flex lg:items-center lg:justify-between lg:gap-10 lg:px-14 lg:py-14"
+      data-reveal
+    >
+      <div class="max-w-xl">
+        <h2 id="cta-title" class="text-3xl text-creme sm:text-4xl">{tr.cta.title}</h2>
+        <p class="mt-4 text-lg">{tr.cta.text}</p>
+      </div>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row lg:mt-0 lg:flex-none">
+        <a href={routes.contact[lang]} class="btn btn-miel">
+          <Icon name="calendar-days" size={20} />{tr.common.askAvailability}
+        </a>
+        <a href={`tel:${site.phoneHref}`} class="btn border-creme text-creme hover:bg-creme hover:text-texte">
+          <Icon name="phone" size={20} />{site.phone}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

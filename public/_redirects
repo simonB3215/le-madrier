@@ -1,0 +1,9 @@
+# Redirections 301 depuis les anciennes adresses (Netlify, Cloudflare Pages)
+/le-chalet            /appartement/         301
+/le-chalet/           /appartement/         301
+/info                 /tarifs-reservation/  301
+/info/                /tarifs-reservation/  301
+/info/les-photos-dete     /photos/          301
+/info/les-photos-dete/    /photos/          301
+/info/les-photos-dhiver   /photos/          301
+/info/les-photos-dhiver/  /photos/          301

@@ -1,0 +1,110 @@
+---
+// Grille de photos + agrandissement dans une fenêtre <dialog> native.
+import { getImage } from 'astro:assets';
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import type { Photo as PhotoType } from '../config/photos';
+import { t, type Lang } from '../i18n';
+interface Props {
+  photos: PhotoType[];
+  lang: Lang;
+  id: string;
+}
+const { photos, lang, id } = Astro.props;
+const tr = t(lang).gallery;
+const full = await Promise.all(
+  photos.map((p) => getImage({ src: p.src, format: 'webp', width: p.src.width, quality: 80 }))
+);
+---
+
+<div data-gallery={id} data-of={tr.of}>
+  <ul class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+    {
+      photos.map((p, i) => (
+        <li data-reveal>
+          <button
+            type="button"
+            class="group block w-full rounded-[1.25rem] text-left"
+            data-full={full[i].src}
+            data-alt={p[lang]}
+            aria-label={`${tr.open} : ${p[lang]}`}
+          >
+            <Photo
+              photo={p}
+              lang={lang}
+              sizes="(min-width: 1024px) 280px, (min-width: 768px) 31vw, 46vw"
+              class="transition-shadow duration-200 group-hover:shadow-lg"
+            />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog
+    class="on-dark m-auto max-h-dvh w-full max-w-5xl bg-transparent p-3 text-creme backdrop:bg-texte/90 sm:p-6"
+    aria-label={tr.dialog}
+  >
+    <div class="flex items-center justify-between gap-4 pb-3">
+      <p class="font-bold" data-count aria-live="polite"></p>
+      <button type="button" class="btn btn-miel min-h-11 px-4 py-2" data-close>
+        <Icon name="x" size={20} />{tr.close}
+      </button>
+    </div>
+    <img
+      src=""
+      alt=""
+      class="mx-auto max-h-[68dvh] w-auto max-w-full rounded-2xl bg-texte object-contain"
+      data-view
+    />
+    <p class="mt-3 text-center" data-caption></p>
+    <div class="mt-4 flex justify-center gap-3">
+      <button type="button" class="btn btn-miel min-h-11 px-4 py-2" data-prev>
+        <Icon name="chevron-left" size={20} /><span>{tr.prev}</span>
+      </button>
+      <button type="button" class="btn btn-miel min-h-11 px-4 py-2" data-next>
+        <span>{tr.next}</span><Icon name="chevron-right" size={20} />
+      </button>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('button[data-full]')];
+    const dialog = root.querySelector('dialog')!;
+    const view = dialog.querySelector<HTMLImageElement>('[data-view]')!;
+    const caption = dialog.querySelector('[data-caption]')!;
+    const count = dialog.querySelector('[data-count]')!;
+    let index = 0;
+    let opener: HTMLButtonElement | null = null;
+
+    const show = (i: number) => {
+      index = (i + buttons.length) % buttons.length;
+      const b = buttons[index];
+      view.src = b.dataset.full!;
+      view.alt = b.dataset.alt!;
+      caption.textContent = b.dataset.alt!;
+      count.textContent = `${index + 1} ${root.dataset.of} ${buttons.length}`;
+    };
+
+    buttons.forEach((b, i) =>
+      b.addEventListener('click', () => {
+        opener = b;
+        show(i);
+        dialog.showModal();
+      })
+    );
+    dialog.querySelector('[data-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-prev]')!.addEventListener('click', () => show(index - 1));
+    dialog.querySelector('[data-next]')!.addEventListener('click', () => show(index + 1));
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+    dialog.addEventListener('close', () => opener?.focus());
+  });
+</script>

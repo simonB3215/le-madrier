@@ -1,0 +1,147 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import Todo from '../components/Todo.astro';
+import { t, routes, type Lang } from '../i18n';
+import { site, formatPrice } from '../config/site';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const r = tr.rates;
+const c = r.conditions;
+const conditions = [
+  { icon: 'moon', ...c.stay },
+  { icon: 'banknote', ...c.payment },
+  { icon: 'calendar-days', ...c.cancel1 },
+  { icon: 'circle-alert', ...c.cancel2 },
+];
+const hasTimes = Boolean(site.checkIn && site.checkOut);
+---
+
+<Base lang={lang} page="rates" title={r.title} description={r.description}>
+  <PageHero eyebrow={r.eyebrow} title={r.h1} lead={r.lead} />
+
+  <section class="section" aria-labelledby="rates-title">
+    <div class="wrap grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
+      <div class="min-w-0">
+        <h2 id="rates-title" class="text-3xl sm:text-4xl">{r.table.caption}</h2>
+
+        {/* Tableau à partir de 768 px */}
+        <div class="mt-8 hidden overflow-hidden rounded-[1.25rem] border-2 border-noyer/25 md:block">
+          <table class="w-full border-collapse text-left">
+            <caption class="sr-only">{r.table.caption}</caption>
+            <thead class="bg-noyer text-creme">
+              <tr>
+                <th scope="col" class="px-6 py-4 font-extrabold">{r.table.period}</th>
+                <th scope="col" class="px-6 py-4 text-right font-extrabold">{r.table.price}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                site.rates.map((rate) => (
+                  <tr class="border-t-2 border-noyer/15 odd:bg-creme even:bg-beige">
+                    <th scope="row" class="px-6 py-5 font-bold">{rate[lang]}</th>
+                    <td class="px-6 py-5 text-right font-serif text-2xl font-semibold whitespace-nowrap text-noyer">
+                      {formatPrice(rate.price)}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        {/* Cartes sur mobile */}
+        <ul class="mt-8 grid gap-4 md:hidden">
+          {
+            site.rates.map((rate) => (
+              <li class="card">
+                <p class="font-bold">{rate[lang]}</p>
+                <p class="mt-1">
+                  <span class="font-serif text-3xl font-semibold text-noyer">{formatPrice(rate.price)}</span>{' '}
+                  {tr.common.perNight}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h2 class="mt-14 text-3xl sm:text-4xl">{c.title}</h2>
+        <dl class="mt-8 grid gap-5 sm:grid-cols-2">
+          {
+            conditions.map((item) => (
+              <div class="card flex gap-4" data-reveal>
+                <span class="chip">
+                  <Icon name={item.icon} />
+                </span>
+                <div class="min-w-0">
+                  <dt class="font-extrabold">{item.name}</dt>
+                  <dd class="mt-1">{item.text}</dd>
+                </div>
+              </div>
+            ))
+          }
+          <div class="card flex gap-4 sm:col-span-2" data-reveal>
+            <span class="chip"><Icon name="clock" /></span>
+            <div class="min-w-0 grow">
+              <dt class="font-extrabold">{c.times.name}</dt>
+              <dd class="mt-1">
+                {
+                  hasTimes ? (
+                    `${c.times.arrival} ${site.checkIn}, ${c.times.departure} ${site.checkOut}.`
+                  ) : (
+                    <Todo lang={lang} text={c.times.todo} />
+                  )
+                }
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <div class="card" data-reveal>
+          <h2 class="text-2xl">{r.included.title}</h2>
+          <ul class="mt-4 grid gap-2">
+            {
+              r.included.items.map((i) => (
+                <li class="flex items-start gap-2 font-bold">
+                  <Icon name="check" size={20} class="mt-1 text-noyer" />
+                  {i}
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-5 border-t-2 border-noyer/20 pt-4">{r.included.note}</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section-beige" id="reservation" aria-labelledby="booking-title">
+    <div class="wrap">
+      <h2 id="booking-title" class="text-3xl sm:text-4xl">{r.booking.title}</h2>
+      <p class="mt-4 max-w-prose">{r.booking.text}</p>
+      {
+        site.bookingCalendarUrl && (
+          <iframe
+            src={site.bookingCalendarUrl}
+            title={r.booking.calendarTitle}
+            loading="lazy"
+            class="mt-8 h-[36rem] w-full rounded-[1.25rem] border-2 border-noyer/25 bg-creme"
+          />
+        )
+      }
+      <div class="mt-7 flex flex-col gap-3 sm:flex-row">
+        <a href={routes.contact[lang]} class="btn btn-primary">
+          <Icon name="calendar-days" size={20} />{tr.common.askAvailability}
+        </a>
+        <a href={`tel:${site.phoneHref}`} class="btn btn-secondary"><Icon name="phone" size={20} />{site.phone}</a>
+        <a href={`mailto:${site.email}`} class="btn btn-secondary"><Icon name="mail" size={20} />{site.email}</a>
+      </div>
+    </div>
+  </section>
+</Base>

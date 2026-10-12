@@ -1,0 +1,32 @@
+---
+// Photo optimisée : AVIF + WebP + JPEG, plusieurs largeurs, chargement différé.
+import { Picture } from 'astro:assets';
+import type { Photo } from '../config/photos';
+import type { Lang } from '../i18n';
+interface Props {
+  photo: Photo;
+  lang: Lang;
+  sizes: string;
+  eager?: boolean;
+  ratio?: string;
+  class?: string;
+}
+const { photo, lang, sizes, eager = false, ratio = '4 / 3', class: cls = '' } = Astro.props;
+const widths = [360, 540, 720, 960, photo.src.width].filter(
+  (w, i, a) => w <= photo.src.width && a.indexOf(w) === i
+);
+---
+
+<div class={`photo ${cls}`} style={`aspect-ratio:${ratio}`}>
+  <Picture
+    src={photo.src}
+    alt={photo[lang]}
+    formats={['avif', 'webp']}
+    fallbackFormat="jpg"
+    widths={widths}
+    sizes={sizes}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+    decoding={eager ? 'sync' : 'async'}
+  />
+</div>

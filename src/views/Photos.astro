@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Gallery from '../components/Gallery.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, routes, type Lang } from '../i18n';
+import { galleries } from '../config/photos';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const p = tr.photos;
+---
+
+<Base lang={lang} page="photos" title={p.title} description={p.description}>
+  <PageHero eyebrow={p.eyebrow} title={p.h1} lead={p.lead}>
+    <ul class="mt-7 flex flex-wrap gap-3">
+      <li>
+        <a href="#ete" class="btn btn-secondary hover:bg-creme"><Icon name="sun" size={20} />{p.summer}</a>
+      </li>
+      <li>
+        <a href="#hiver" class="btn btn-secondary hover:bg-creme"><Icon name="snowflake" size={20} />{p.winter}</a>
+      </li>
+    </ul>
+  </PageHero>
+
+  <section class="section" id="ete" aria-labelledby="ete-title">
+    <div class="wrap">
+      <h2 id="ete-title" class="text-3xl sm:text-4xl">{p.summer}</h2>
+      <div class="mt-8"><Gallery photos={galleries.summer} lang={lang} id="ete" /></div>
+    </div>
+  </section>
+
+  <section class="section section-beige" id="hiver" aria-labelledby="hiver-title">
+    <div class="wrap">
+      <h2 id="hiver-title" class="text-3xl sm:text-4xl">{p.winter}</h2>
+      <div class="mt-8"><Gallery photos={galleries.winter} lang={lang} id="hiver" /></div>
+    </div>
+  </section>
+
+  <section class="section pb-0 lg:pb-0" aria-labelledby="inside-title">
+    <div class="wrap">
+      <h2 id="inside-title" class="text-3xl sm:text-4xl">{p.inside}</h2>
+      <p class="mt-4 max-w-prose">{p.insideText}</p>
+      <a href={routes.apartment[lang]} class="btn btn-secondary mt-6">
+        {tr.common.seeApartment}<Icon name="arrow-right" size={20} />
+      </a>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>

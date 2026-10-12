@@ -1,0 +1,132 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import Gallery from '../components/Gallery.astro';
+import PageHero from '../components/PageHero.astro';
+import Todo from '../components/Todo.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, routes, type Lang } from '../i18n';
+import { formatPrice, lowestPrice } from '../config/site';
+import { photos, galleries } from '../config/photos';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const p = tr.apartment;
+const rooms = [
+  { icon: 'bed-double', ...p.rooms.bedrooms },
+  { icon: 'sofa', ...p.rooms.living },
+  { icon: 'utensils', ...p.rooms.kitchen },
+  { icon: 'bath', ...p.rooms.bath },
+  { icon: 'door-open', ...p.rooms.hall },
+  { icon: 'bed-single', ...p.rooms.extra },
+];
+// Équipements repris des pictogrammes du site d'origine
+const amenities = [
+  { icon: 'square-parking', text: tr.amenities.parking },
+  { icon: 'wifi', text: tr.amenities.wifi },
+  { icon: 'tv', text: tr.amenities.tv },
+  { icon: 'washing-machine', text: tr.amenities.washer },
+  { icon: 'baby', text: tr.amenities.cot },
+  { icon: 'tree-pine', text: tr.amenities.garden },
+  { icon: 'cigarette-off', text: tr.amenities.nosmoking },
+  { icon: 'paw-print', text: tr.amenities.pets },
+];
+---
+
+<Base lang={lang} page="apartment" title={p.title} description={p.description}>
+  <PageHero eyebrow={p.eyebrow} title={p.h1} lead={p.lead}>
+    <div class="mt-8 grid gap-4 md:grid-cols-[2fr_1fr]">
+      <Photo photo={photos.salonVueEnsemble} lang={lang} eager sizes="(min-width: 768px) 60vw, 100vw" ratio="3 / 2" class="md:self-stretch" />
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-1">
+        <Photo photo={photos.chambre2} lang={lang} eager sizes="(min-width: 768px) 36vw, 46vw" ratio="3 / 2" />
+        <Photo photo={photos.cuisine} lang={lang} eager sizes="(min-width: 768px) 36vw, 46vw" ratio="3 / 2" />
+      </div>
+    </div>
+  </PageHero>
+
+  <section class="section" aria-labelledby="rooms-title">
+    <div class="wrap grid gap-12 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
+      <div>
+        <h2 id="rooms-title" class="text-3xl sm:text-4xl">{p.rooms.title}</h2>
+        <ul class="mt-8 grid gap-5 sm:grid-cols-2">
+          {
+            rooms.map((r) => (
+              <li class="card flex gap-4" data-reveal>
+                <span class="chip">
+                  <Icon name={r.icon} />
+                </span>
+                <div>
+                  <h3 class="text-xl">{r.name}</h3>
+                  <p class="mt-1.5">{r.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h2 class="mt-14 text-3xl sm:text-4xl">{p.outside.title}</h2>
+        <p class="mt-4 max-w-prose">{p.outside.text}</p>
+      </div>
+
+      <aside class="lg:sticky lg:top-28 lg:self-start" aria-labelledby="price-title">
+        <div class="card" data-reveal>
+          <h2 id="price-title" class="text-2xl">{p.price.title}</h2>
+          <p class="mt-3">
+            <strong class="block font-serif text-3xl font-semibold text-noyer">
+              {`${tr.common.from} ${formatPrice(lowestPrice())} ${tr.common.perNight}`}
+            </strong>
+            {p.price.text}
+          </p>
+          <h3 class="mt-6 font-sans text-base font-extrabold text-texte">{p.included.title}</h3>
+          <ul class="mt-2 grid gap-1.5">
+            {
+              p.included.items.map((i) => (
+                <li class="flex items-start gap-2">
+                  <Icon name="check" size={20} class="mt-1 text-noyer" />
+                  {i}
+                </li>
+              ))
+            }
+          </ul>
+          <div class="mt-6 grid gap-3">
+            <a href={routes.contact[lang]} class="btn btn-primary">
+              <Icon name="calendar-days" size={20} />{tr.common.askAvailability}
+            </a>
+            <a href={routes.rates[lang]} class="btn btn-secondary hover:bg-creme">{tr.common.seeRates}</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section-beige" aria-labelledby="amenities-title">
+    <div class="wrap">
+      <h2 id="amenities-title" class="text-3xl sm:text-4xl">{p.amenities.title}</h2>
+      <ul class="mt-8 grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          amenities.map((a) => (
+            <li class="flex items-center gap-3 font-bold">
+              <span class="chip">
+                <Icon name={a.icon} />
+              </span>
+              {a.text}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-8 max-w-2xl"><Todo lang={lang} text={p.breakfast.todo} /></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="gallery-title">
+    <div class="wrap">
+      <h2 id="gallery-title" class="text-3xl sm:text-4xl">{p.galleryTitle}</h2>
+      <div class="mt-8"><Gallery photos={galleries.apartment} lang={lang} id="apartment" /></div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>

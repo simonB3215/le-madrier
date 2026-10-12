@@ -1,0 +1,184 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import Todo from '../components/Todo.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { t, routes, type Lang } from '../i18n';
+import { site, formatPrice, lowestPrice } from '../config/site';
+import { photos } from '../config/photos';
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const h = tr.home;
+const priceFrom = `${tr.common.from} ${formatPrice(lowestPrice())} ${tr.common.perNight}`;
+const facts = [
+  { icon: 'users', text: h.facts.guests },
+  { icon: 'bed-double', text: h.facts.bedrooms },
+  { icon: 'square-parking', text: h.facts.parking },
+  { icon: 'wifi', text: h.facts.wifi },
+  { icon: 'moon', text: h.facts.nights },
+];
+const cards = [
+  { photo: photos.salonFauteuils, title: h.apartment.cards.living },
+  { photo: photos.chambre1, title: h.apartment.cards.bedrooms },
+  { photo: photos.coinRepas, title: h.apartment.cards.kitchen },
+];
+---
+
+<Base lang={lang} page="home" title={h.title} description={h.description}>
+  <section class="overflow-hidden">
+    <div class="wrap grid items-center gap-10 py-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14 lg:py-16">
+      <div>
+        <p class="eyebrow">{h.eyebrow}</p>
+        <h1 class="mt-5 text-[2.5rem] sm:text-6xl lg:text-[4rem]">{h.h1}</h1>
+        <p class="lead mt-6">{h.lead}</p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a href={routes.contact[lang]} class="btn btn-primary sm:whitespace-nowrap">
+            <Icon name="calendar-days" size={20} />{tr.common.askAvailability}
+          </a>
+          <a href={routes.apartment[lang]} class="btn btn-secondary sm:whitespace-nowrap">
+            {tr.common.seeApartment}<Icon name="arrow-right" size={20} />
+          </a>
+        </div>
+        <p class="mt-6 font-bold">
+          {tr.common.from}{' '}
+          <span class="font-serif text-2xl font-semibold text-noyer">{formatPrice(lowestPrice())}</span>{' '}
+          {tr.common.perNight}
+        </p>
+      </div>
+      <div class="relative">
+        <Photo
+          photo={photos.chaletHiverFacade}
+          lang={lang}
+          eager
+          sizes="(min-width: 1024px) 600px, 100vw"
+          class="rounded-[2rem_2rem_2rem_0.5rem] shadow-lg"
+        />
+        <div class="absolute -bottom-6 -left-3 hidden w-44 rotate-[-4deg] sm:block lg:-left-10 lg:w-52">
+          <Photo
+            photo={photos.enseigneLeMadrier}
+            lang={lang}
+            eager
+            sizes="208px"
+            class="border-4 border-creme shadow-lg"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-beige mt-6" aria-labelledby="facts-title">
+    <div class="wrap py-8">
+      <h2 id="facts-title" class="sr-only">{h.facts.label}</h2>
+      <ul class="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
+        {
+          facts.map((f) => (
+            <li class="flex items-center gap-3 font-bold">
+              <span class="chip">
+                <Icon name={f.icon} />
+              </span>
+              {f.text}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="welcome-title">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div class="grid grid-cols-5 items-end gap-4" data-reveal>
+        <Photo
+          photo={photos.terrasseEte}
+          lang={lang}
+          sizes="(min-width: 1024px) 340px, 58vw"
+          ratio="4 / 5"
+          class="col-span-3"
+        />
+        <Photo
+          photo={photos.coucherSoleilSommet}
+          lang={lang}
+          sizes="(min-width: 1024px) 220px, 38vw"
+          ratio="3 / 4"
+          class="col-span-2 mb-8"
+        />
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{h.welcome.eyebrow}</p>
+        <h2 id="welcome-title" class="mt-4 text-3xl sm:text-4xl">{h.welcome.title}</h2>
+        <p class="mt-5 max-w-prose">{h.welcome.p1}</p>
+        <p class="mt-4 max-w-prose">{h.welcome.p2}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-beige" aria-labelledby="apartment-title">
+    <div class="wrap">
+      <div class="max-w-2xl" data-reveal>
+        <p class="eyebrow">{h.apartment.eyebrow}</p>
+        <h2 id="apartment-title" class="mt-4 text-3xl sm:text-4xl">{h.apartment.title}</h2>
+        <p class="mt-5">{h.apartment.text}</p>
+      </div>
+      <ul class="mt-10 grid gap-6 md:grid-cols-3">
+        {
+          cards.map((c) => (
+            <li data-reveal>
+              <Photo photo={c.photo} lang={lang} sizes="(min-width: 768px) 31vw, 100vw" />
+              <h3 class="mt-4 text-xl">{c.title}</h3>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between" data-reveal>
+        <p class="max-w-xl">
+          <strong class="font-serif text-2xl font-semibold text-noyer">{priceFrom}</strong>{' '}
+          {h.apartment.price}
+        </p>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <a href={routes.apartment[lang]} class="btn btn-primary">{tr.common.seeApartment}</a>
+          <a href={routes.rates[lang]} class="btn btn-secondary">{tr.common.seeRates}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="region-title">
+    <div class="wrap grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div data-reveal>
+        <p class="eyebrow">{h.region.eyebrow}</p>
+        <h2 id="region-title" class="mt-4 text-3xl sm:text-4xl">{h.region.title}</h2>
+        <p class="mt-5 max-w-prose">{h.region.text}</p>
+        <div class="mt-7 flex flex-col gap-3 sm:flex-row">
+          <a href={routes.region[lang]} class="btn btn-secondary">
+            {tr.common.seeRegion}<Icon name="arrow-right" size={20} />
+          </a>
+          <a href={routes.photos[lang]} class="btn btn-secondary">{tr.common.seePhotos}</a>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4" data-reveal>
+        <Photo photo={photos.massifNuages} lang={lang} sizes="(min-width: 1024px) 280px, 46vw" ratio="1 / 1" />
+        <Photo photo={photos.chaletEteJardin} lang={lang} sizes="(min-width: 1024px) 280px, 46vw" ratio="1 / 1" class="mt-8" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-beige" aria-labelledby="hosts-title">
+    <div class="wrap grid gap-10 lg:grid-cols-2 lg:gap-16">
+      <div data-reveal>
+        <p class="eyebrow">{h.hosts.eyebrow}</p>
+        <h2 id="hosts-title" class="mt-4 text-3xl sm:text-4xl">{h.hosts.title}</h2>
+        <div class="mt-6"><Todo lang={lang} text={h.hosts.todo} /></div>
+      </div>
+      <div data-reveal>
+        <p class="eyebrow">{h.reviews.eyebrow}</p>
+        <h2 class="mt-4 text-3xl sm:text-4xl">{h.reviews.title}</h2>
+        <div class="mt-6"><Todo lang={lang} text={h.reviews.todo} /></div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand lang={lang} />
+</Base>
